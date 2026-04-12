@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Теория игр в медицине · Digital in Pharma</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0D1117;
+    --s1:       #161B22;
+    --s2:       #1C2333;
+    --s3:       #21262D;
+    --border:   rgba(255,255,255,0.07);
+    --border-m: rgba(255,255,255,0.12);
+    --border-l: rgba(255,255,255,0.18);
+    --text:     #FFFFFF;
+    --text-s:   rgba(255,255,255,0.85);
+    --text-d:   rgba(255,255,255,0.55);
+
+    --teal:     #00C2A8;
+    --teal-bg:  rgba(0,194,168,0.12);
+    --teal-b:   rgba(0,194,168,0.28);
+
+    --green:    #22C55E;
+    --green-bg: rgba(34,197,94,0.12);
+    --green-b:  rgba(34,197,94,0.28);
+
+    --red:      #EF4444;
+    --red-bg:   rgba(239,68,68,0.12);
+    --red-b:    rgba(239,68,68,0.28);
+
+    --amber:    #F59E0B;
+    --amber-bg: rgba(245,158,11,0.12);
+    --amber-b:  rgba(245,158,11,0.28);
+
+    --purple:   #A78BFA;
+    --purple-bg:rgba(167,139,250,0.12);
+    --purple-b: rgba(167,139,250,0.28);
+
+    --r: 16px; --rs: 10px; --rx: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body { font-family: 'Onest', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .screen { display: none; padding: 20px 16px 48px; max-width: 480px; margin: 0 auto; animation: fadeIn 0.2s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ── CHANNEL LINK ── */
+  .ch-link {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--teal-bg); border: 1px solid var(--teal-b);
+    border-radius: var(--rs); padding: 10px 14px;
+    margin-bottom: 24px; text-decoration: none; cursor: pointer;
+  }
+  .ch-link:active { opacity: 0.75; }
+  .ch-left { display: flex; align-items: center; gap: 10px; }
+  .ch-icon { width: 30px; height: 30px; border-radius: 7px; background: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .ch-name { font-size: 13px; font-weight: 700; color: var(--teal); }
+  .ch-slogan { font-size: 11px; color: var(--text-s); margin-top: 1px; font-style: italic; }
+  .ch-arr  { font-size: 13px; color: var(--teal); }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer-card {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--rs); padding: 12px 14px; margin-bottom: 22px;
+  }
+  .disclaimer-icon { font-size: 14px; color: var(--text-d); flex-shrink: 0; margin-top: 1px; font-style: normal; }
+  .disclaimer-body { flex: 1; }
+  .disclaimer-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-d); margin-bottom: 5px; }
+  .disclaimer-text { font-size: 11px; color: var(--text-d); line-height: 1.6; }
+
+  /* ── TYPOGRAPHY ── */
+  .eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin-bottom: 10px; }
+  .title-xl { font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 12px; }
+  .body-md  { font-size: 14px; color: var(--text-s); line-height: 1.7; margin-bottom: 22px; }
+  .label-sm { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-d); margin-bottom: 8px; }
+
+  /* ── CARDS ── */
+  .card { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--r); padding: 16px 18px; }
+  .card + .card { margin-top: 10px; }
+
+  /* ── CONCEPT CARD ── */
+  .concept-card {
+    border-radius: var(--r); padding: 18px;
+    margin-bottom: 20px; border: 1px solid;
+  }
+  .concept-card.teal   { background: var(--teal-bg);   border-color: var(--teal-b); }
+  .concept-card.green  { background: var(--green-bg);  border-color: var(--green-b); }
+  .concept-card.amber  { background: var(--amber-bg);  border-color: var(--amber-b); }
+  .concept-card.red    { background: var(--red-bg);    border-color: var(--red-b); }
+  .concept-card.purple { background: var(--purple-bg); border-color: var(--purple-b); }
+
+  .concept-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+  .concept-card.teal   .concept-label { color: var(--teal); }
+  .concept-card.green  .concept-label { color: var(--green); }
+  .concept-card.amber  .concept-label { color: var(--amber); }
+  .concept-card.red    .concept-label { color: var(--red); }
+  .concept-card.purple .concept-label { color: var(--purple); }
+
+  .concept-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .concept-text  { font-size: 13px; color: var(--text-s); line-height: 1.7; }
+
+  .concept-term {
+    display: inline-block; margin-top: 10px;
+    border-radius: var(--rx); padding: 4px 10px;
+    font-size: 11px; font-weight: 700;
+  }
+  .concept-card.teal   .concept-term { background: rgba(0,194,168,0.18); color: var(--teal); }
+  .concept-card.green  .concept-term { background: rgba(34,197,94,0.18); color: var(--green); }
+  .concept-card.amber  .concept-term { background: rgba(245,158,11,0.18); color: var(--amber); }
+  .concept-card.red    .concept-term { background: rgba(239,68,68,0.18); color: var(--red); }
+  .concept-card.purple .concept-term { background: rgba(167,139,250,0.18); color: var(--purple); }
+
+  /* ── TOPBAR ── */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .round-pill { background: var(--s2); border: 1px solid var(--border-m); border-radius: 20px; padding: 6px 13px; font-size: 12px; font-weight: 600; color: var(--text-s); }
+  .round-pill b { color: var(--text); }
+  .vitals { display: flex; gap: 10px; font-size: 12px; font-weight: 600; color: var(--text-s); }
+  .vitals b { color: var(--text); }
+
+  .progress-track { height: 3px; background: var(--s3); border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill  { height: 100%; background: var(--teal); border-radius: 3px; transition: width 0.4s ease; }
+
+  .act-tag {
+    display: inline-block; border-radius: var(--rx); padding: 4px 10px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .act-tag.teal   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-b); }
+  .act-tag.green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-b); }
+  .act-tag.amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-b); }
+  .act-tag.red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-b); }
+  .act-tag.purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-b); }
+
+  .scenario-card { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--r); padding: 15px 16px; margin-bottom: 20px; }
+  .scenario-text { font-size: 14px; color: var(--text-s); line-height: 1.7; }
+
+  .section-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-d); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+  /* ── CHOICES ── */
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .choice-btn {
+    background: var(--s1); border: 1px solid var(--border-m);
+    border-radius: var(--rs); padding: 13px 12px;
+    cursor: pointer; text-align: left;
+    transition: border-color 0.12s, background 0.12s;
+    -webkit-user-select: none; user-select: none;
+  }
+  .choice-btn:active { transform: scale(0.97); }
+  .choice-btn.selected { border-color: var(--teal); background: var(--teal-bg); }
+  .cb-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .cb-desc  { font-size: 11px; color: var(--text-s); line-height: 1.5; }
+  .choice-btn.selected .cb-title { color: var(--teal); }
+  .choice-btn.selected .cb-desc  { color: rgba(0,194,168,0.7); }
+
+  /* ── OUTCOME ── */
+  .outcome-card { border-radius: var(--r); padding: 16px 18px; margin-bottom: 18px; border: 1px solid; }
+  .outcome-card.coop   { background: var(--green-bg); border-color: var(--green-b); }
+  .outcome-card.betray { background: var(--red-bg);   border-color: var(--red-b); }
+  .outcome-card.mixed  { background: var(--amber-bg); border-color: var(--amber-b); }
+  .outcome-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .outcome-card.coop   .outcome-title { color: var(--green); }
+  .outcome-card.betray .outcome-title { color: var(--red); }
+  .outcome-card.mixed  .outcome-title { color: var(--amber); }
+  .outcome-text { font-size: 13px; line-height: 1.7; color: var(--text-s); }
+
+  .fact-row {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 11px; color: var(--text-d); line-height: 1.6;
+  }
+  .fact-row b { color: var(--text-s); }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .stat-card { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--rs); padding: 13px 15px; }
+  .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-d); margin-bottom: 5px; }
+  .stat-val { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); }
+  .stat-bar { height: 3px; border-radius: 3px; background: var(--s3); margin-top: 8px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .fill-h { background: var(--green); }
+  .fill-t { background: var(--teal); }
+
+  /* ── HISTORY CHIPS ── */
+  .history-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .h-chip { border-radius: var(--rx); padding: 5px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; border: 1px solid; }
+  .h-chip.cc { background: var(--green-bg); color: var(--green); border-color: var(--green-b); }
+  .h-chip.cd { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-b); }
+  .h-chip.dc { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-b); }
+  .h-chip.dd { background: var(--red-bg);   color: var(--red);   border-color: var(--red-b); }
+
+  /* ── BUTTONS ── */
+  .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: var(--rs); font-family: 'Onest', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.98); opacity: 0.88; }
+  .btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+  .btn-teal    { background: var(--teal);   color: #fff; }
+  .btn-outline { background: transparent;  color: var(--text); border: 1px solid var(--border-l); margin-top: 10px; }
+  .btn-outline:active { background: var(--s1); }
+
+  /* ── ACT INTRO ── */
+  .act-intro { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--r); padding: 20px 18px; margin-bottom: 20px; }
+  .act-intro-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin-bottom: 6px; }
+  .act-intro-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 10px; letter-spacing: -0.02em; }
+  .act-intro-text { font-size: 13px; color: var(--text-s); line-height: 1.7; }
+
+  /* ── INSIGHT (after act) ── */
+  .insight-card { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--r); padding: 16px 18px; margin-bottom: 18px; }
+  .insight-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); margin-bottom: 8px; }
+  .insight-text  { font-size: 14px; color: var(--text-s); line-height: 1.7; }
+
+  /* ── FINAL ── */
+  .final-hero { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--r); padding: 20px 18px; margin-bottom: 18px; }
+  .final-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin-bottom: 8px; }
+  .final-title { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
+  .final-sub   { font-size: 13px; color: var(--text-s); line-height: 1.6; }
+
+  .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 18px; }
+  .summary-row { background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--rs); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .summary-act { font-size: 13px; font-weight: 600; color: var(--text-s); }
+  .summary-score { font-size: 14px; font-weight: 700; color: var(--text); }
+
+  .legend-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-d); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 3px; }
+
+  .footer-link { display: flex; align-items: center; justify-content: space-between; background: var(--s1); border: 1px solid var(--border-m); border-radius: var(--rs); padding: 12px 14px; margin-top: 12px; text-decoration: none; cursor: pointer; }
+  .footer-link:active { opacity: 0.75; }
+  .fl-left { display: flex; align-items: center; gap: 10px; }
+  .fl-icon { width: 30px; height: 30px; border-radius: 7px; background: var(--teal-bg); border: 1px solid var(--teal-b); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .fl-name { font-size: 13px; font-weight: 700; color: var(--teal); }
+  .fl-sub  { font-size: 11px; color: var(--text-s); margin-top: 1px; }
+  .fl-arr  { font-size: 13px; color: var(--text-d); }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ── ACT MAP (intro) ── */
+  .act-map { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 22px; }
+  .act-map-row { display: flex; align-items: center; gap: 12px; background: var(--s1); border: 1px solid var(--border); border-radius: var(--rs); padding: 12px 14px; }
+  .act-map-num { width: 28px; height: 28px; border-radius: 7px; background: var(--teal-bg); border: 1px solid var(--teal-b); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--teal); flex-shrink: 0; }
+  .act-map-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .act-map-sub   { font-size: 11px; color: var(--text-s); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     INTRO
+══════════════════════════════════════ -->
+<div class="screen active" id="s-intro">
+  <a class="ch-link" href="https://t.me/digitalinpharma" target="_blank">
+    <div class="ch-left">
+      <div class="ch-icon">💊</div>
+      <div>
+        <div class="ch-name">Digital in Pharma</div>
+        <div class="ch-slogan">Фарма. Диджитал. Здравый смысл.</div>
+      </div>
+    </div>
+    <div class="ch-arr">↗</div>
+  </a>
+
+  <div class="disclaimer-card">
+    <div class="disclaimer-icon">ℹ</div>
+    <div class="disclaimer-body">
+      <div class="disclaimer-title">Образовательный материал</div>
+      <div class="disclaimer-text">Игра создана исключительно в образовательных целях для изучения теории игр на медицинских примерах. Содержание не является медицинской рекомендацией, диагностикой или руководством к действию. При наличии вопросов о здоровье обратитесь к квалифицированному специалисту. Упоминаемые клинические ситуации — учебные модели, не инструкции по лечению (ФЗ-323, ст. 2; ФЗ-38, ст. 24).</div>
+    </div>
+  </div>
+
+  <div class="eyebrow">Образовательная игра</div>
+  <h1 class="title-xl">Теория игр<br>в медицине</h1>
+  <p class="body-md">Почему пациенты не говорят врачам правду? Почему антибиотики перестают работать? За этим стоит математика. Пять актов — пять концепций теории игр через медицинские ситуации.</p>
+
+  <div class="act-map">
+    <div class="act-map-row"><div class="act-map-num">1</div><div><div class="act-map-title">Дилемма заключённого</div><div class="act-map-sub">Первый приём у врача</div></div></div>
+    <div class="act-map-row"><div class="act-map-num">2</div><div><div class="act-map-title">Повторяющаяся игра</div><div class="act-map-sub">Хроническое заболевание</div></div></div>
+    <div class="act-map-row"><div class="act-map-num">3</div><div><div class="act-map-title">Трагедия общин</div><div class="act-map-sub">Антибиотикорезистентность</div></div></div>
+    <div class="act-map-row"><div class="act-map-num">4</div><div><div class="act-map-title">Игра с нулевой суммой</div><div class="act-map-sub">Пациент и страховая</div></div></div>
+    <div class="act-map-row"><div class="act-map-num">5</div><div><div class="act-map-title">Равновесие Нэша</div><div class="act-map-sub">Система здравоохранения</div></div></div>
+  </div>
+
+  <button class="btn btn-teal" onclick="startGame()">Начать →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     ACT INTRO SCREEN
+══════════════════════════════════════ -->
+<div class="screen" id="s-act-intro">
+  <div class="topbar">
+    <div class="round-pill">Акт <b id="ai-num"></b> из 5</div>
+  </div>
+  <div class="concept-card" id="ai-concept-card">
+    <div class="concept-label" id="ai-concept-label"></div>
+    <div class="concept-title" id="ai-concept-title"></div>
+    <div class="concept-text"  id="ai-concept-text"></div>
+    <div class="concept-term"  id="ai-concept-term"></div>
+  </div>
+  <div class="act-intro">
+    <div class="act-intro-num" id="ai-scenario-label"></div>
+    <div class="act-intro-title" id="ai-scenario-title"></div>
+    <div class="act-intro-text"  id="ai-scenario-text"></div>
+  </div>
+  <button class="btn btn-teal" onclick="startAct()">Перейти к ситуациям →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     ROUND SCREEN
+══════════════════════════════════════ -->
+<div class="screen" id="s-round">
+  <div class="topbar">
+    <div class="round-pill">Акт <b id="r-act"></b> · Ситуация <b id="r-round"></b></div>
+    <div class="vitals"><span>❤️ <b id="v-h">5</b></span><span>🤝 <b id="v-t">5</b></span></div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="r-progress"></div></div>
+
+  <div class="act-tag" id="r-tag"></div>
+  <div class="scenario-card"><p class="scenario-text" id="r-scenario"></p></div>
+
+  <div class="section-head" id="r-label-doc"></div>
+  <div class="choice-grid" id="r-choices-doc"></div>
+
+  <div class="section-head" id="r-label-pat"></div>
+  <div class="choice-grid" id="r-choices-pat"></div>
+
+  <button class="btn btn-teal" id="r-confirm" onclick="confirmRound()" disabled>Подтвердить →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     RESULT SCREEN
+══════════════════════════════════════ -->
+<div class="screen" id="s-result">
+  <div class="topbar" style="margin-bottom:16px;">
+    <div class="round-pill">Итог · Акт <b id="res-act"></b> · Ситуация <b id="res-round"></b></div>
+  </div>
+  <div id="res-outcome"></div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Здоровье</div>
+      <div class="stat-val" id="res-h"></div>
+      <div class="stat-bar"><div class="stat-bar-fill fill-h" id="res-bar-h"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Доверие</div>
+      <div class="stat-val" id="res-t"></div>
+      <div class="stat-bar"><div class="stat-bar-fill fill-t" id="res-bar-t"></div></div>
+    </div>
+  </div>
+  <div class="label-sm">История</div>
+  <div class="history-row" id="res-history"></div>
+  <button class="btn btn-teal" id="res-next" onclick="nextStep()">Следующая ситуация →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     ACT INSIGHT SCREEN
+══════════════════════════════════════ -->
+<div class="screen" id="s-insight">
+  <div class="topbar">
+    <div class="round-pill">Акт <b id="ins-act"></b> завершён</div>
+  </div>
+  <div class="concept-card" id="ins-concept-card" style="margin-bottom:16px;">
+    <div class="concept-label" id="ins-concept-label"></div>
+    <div class="concept-title" id="ins-concept-title"></div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-label">Что показала игра</div>
+    <div class="insight-text" id="ins-text"></div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-label">Реальный контекст</div>
+    <div class="insight-text" id="ins-real"></div>
+  </div>
+  <div class="label-sm" style="margin-top:4px;">Раунды этого акта</div>
+  <div class="history-row" id="ins-history"></div>
+  <button class="btn btn-teal" id="ins-next" onclick="nextAct()">Следующий акт →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     FINAL SCREEN
+══════════════════════════════════════ -->
+<div class="screen" id="s-final">
+  <div class="final-hero">
+    <div class="final-label">Digital in Pharma · Игра пройдена</div>
+    <div class="final-title" id="fin-title"></div>
+    <div class="final-sub"   id="fin-sub"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Здоровье</div>
+      <div class="stat-val" id="fin-h"></div>
+      <div class="stat-bar"><div class="stat-bar-fill fill-h" id="fin-bar-h"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Доверие</div>
+      <div class="stat-val" id="fin-t"></div>
+      <div class="stat-bar"><div class="stat-bar-fill fill-t" id="fin-bar-t"></div></div>
+    </div>
+  </div>
+
+  <div class="label-sm">Результат по актам</div>
+  <div class="summary-grid" id="fin-summary"></div>
+
+  <div class="insight-card" style="margin-top:4px;">
+    <div class="insight-label">Главный вывод</div>
+    <div class="insight-text" id="fin-insight"></div>
+  </div>
+
+  <div class="label-sm">Все ходы</div>
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green-b);"></div>CC — оба сотрудничали</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber-b);"></div>CD/DC — один предал</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px solid var(--red-b);"></div>DD — оба предали</div>
+  </div>
+  <div class="history-row" id="fin-history"></div>
+
+  <button class="btn btn-teal" onclick="shareResult()">Поделиться результатом</button>
+  <button class="btn btn-outline" onclick="restartGame()">Сыграть ещё раз</button>
+
+  <a class="footer-link" href="https://t.me/digitalinpharma" target="_blank">
+    <div class="fl-left">
+      <div class="fl-icon">💊</div>
+      <div>
+        <div class="fl-name">Digital in Pharma</div>
+        <div class="fl-sub">Фарма. Диджитал. Здравый смысл.</div>
+      </div>
+    </div>
+    <div class="fl-arr">↗</div>
+  </a>
+
+  <div class="disclaimer-card" style="margin-top:12px;">
+    <div class="disclaimer-icon">ℹ</div>
+    <div class="disclaimer-body">
+      <div class="disclaimer-title">Дисклеймер</div>
+      <div class="disclaimer-text">Все материалы носят исключительно образовательный характер. Не являются медицинской рекомендацией. Статистические данные приведены из открытых научных источников. Упоминание нормативных актов РФ — справочное. Авторы не несут ответственности за клинические решения, принятые на основании содержания игры.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0D1117'); tg.setBackgroundColor('#0D1117'); }
+
+/* ══════════════════════════════════════
+   GAME DATA
+══════════════════════════════════════ */
+const ACTS = [
+  {
+    color: 'teal',
+    concept: {
+      label: 'Концепция 1',
+      title: 'Дилемма заключённого (Prisoner\'s Dilemma)',
+      text: 'Две стороны независимо делают выбор: сотрудничать или действовать в своих интересах. Парадокс в том, что если оба преследуют личную выгоду — оба проигрывают. Оптимальный результат достигается только при взаимном доверии.',
+      term: 'Равновесие без сотрудничества хуже совместного оптимума'
+    },
+    scenario: {
+      label: 'Акт 1 · Сценарий',
+      title: 'Первый приём',
+      text: 'Пациент обратился к терапевту с жалобами на утомляемость и субфебрильную температуру (37.2 °C) в течение двух недель. Диагноз неясен — нужен сбор анамнеза и осмотр.'
+    },
+    insight: 'Когда врач и пациент не доверяют друг другу с первого приёма, это классическая дилемма заключённого. Каждый защищает себя: врач не тратит время, пациент скрывает «неудобные» факты — и оба получают худший исход, чем при сотрудничестве.',
+    real: 'По данным исследований (Levinson et al., JAMA, 1997), пациенты скрывают клинически значимую информацию в 60–80% первичных обращений. Основные причины: стыд, страх осуждения, недоверие к системе. Это напрямую снижает качество диагностики.',
+    rounds: [
+      {
+        tag: 'Акт 1 · Сбор анамнеза',
+        text: 'Врач должен собрать анамнез. Пациент — решить, насколько он будет откровенен. Пациент употребляет алкоголь в количестве, превышающем рекомендуемые нормы ВОЗ, но боится осуждения.',
+        dLabel: '🩺 Что делает врач?',
+        pLabel: '🧑 Что делает пациент?',
+        dCoop: ['Развёрнутый анамнез', 'Задаёт вопросы без осуждения, объясняет важность полной картины'],
+        dBtry: ['Формальный осмотр', 'Ограничивается стандартными вопросами, торопится'],
+        pCoop: ['Говорит всё честно', 'Сообщает об употреблении алкоголя и режиме сна'],
+        pBtry: ['Скрывает факты', 'Умалчивает об алкоголе, называет только «безопасные» симптомы'],
+        out: {
+          cc: { t:'coop',  h:'Полная клиническая картина',
+                b:'Врач выявил возможную алкогольную этиологию астенического синдрома. Назначено обоснованное обследование: ОАК, биохимия крови (АЛТ, АСТ, ГГТ), ТТГ. Диагностика на верном пути.',
+                fact:'ВОЗ: злоупотребление алкоголем — одна из ведущих причин астенического синдрома и субфебрилитета у взрослых.',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Тщательный осмотр, неполные данные',
+                b:'Врач потратил время на детальный расспрос, но ключевой факт скрыт. Назначено обследование, которое может не выявить причину. Диагноз затруднён.',
+                fact:'Скрытое злоупотребление алкоголем — причина диагностических ошибок в 20–30% случаев хронической усталости (Schuckit, NEJM, 2014).',
+                dh:+1, dt:-1 },
+          dc: { t:'mixed', h:'Пациент честен, врач не воспользовался',
+                b:'Пациент раскрылся, но формальный приём не позволил использовать эту информацию. Пациент разочарован — в следующий раз будет менее открыт.',
+                fact:'Качество сбора анамнеза — предиктор приверженности лечению (Ong et al., Social Science & Medicine, 1995).',
+                dh:+1, dt:-2 },
+          dd: { t:'betray', h:'Диагностическая ошибка',
+                b:'Формальный приём при скрытых симптомах. Высокая вероятность гипердиагностики или пропущенного диагноза. Пациент уйдёт без реальной помощи.',
+                fact:'Дефицит времени на первичном приёме (менее 8 минут) ассоциирован с ростом числа ненужных направлений и ошибок (Irving et al., BMJ, 2017).',
+                dh:-1, dt:-3 }
+        }
+      },
+      {
+        tag: 'Акт 1 · Назначение обследования',
+        text: 'По итогам первичного осмотра врач назначает обследование. Пациент должен решить, выполнит ли он его в полном объёме или ограничится минимумом.',
+        dLabel: '🩺 Что назначает врач?',
+        pLabel: '🧑 Что делает пациент?',
+        dCoop: ['Обоснованный план', 'Объясняет цель каждого анализа, указывает сроки'],
+        dBtry: ['Избыточное направление', 'Назначает всё подряд без объяснений «на всякий случай»'],
+        pCoop: ['Выполняет полностью', 'Сдаёт все анализы, возвращается с результатами'],
+        pBtry: ['Игнорирует часть', 'Сдаёт только удобные анализы, пропускает повторный визит'],
+        out: {
+          cc: { t:'coop',  h:'Эффективная диагностика',
+                b:'Пациент понимает, зачем каждый анализ. Выполняет план полностью. Диагноз установлен в минимальные сроки с минимальными затратами.',
+                fact:'Приверженность диагностическому плану выше, когда врач объясняет цель каждого шага (Zolnierek & DiMatteo, Annals of Internal Medicine, 2009).',
+                dh:+3, dt:+2 },
+          cd: { t:'mixed', h:'Планомерно — но пациент выпал',
+                b:'Хороший план назначений остался невыполненным. Диагностика затянется. Придётся повторять часть обследования.',
+                fact:'До 50% пациентов не выполняют диагностические назначения полностью без объяснения их важности (Jin et al., Canadian Family Physician, 2008).',
+                dh:0, dt:-1 },
+          dc: { t:'mixed', h:'Пациент старался, план был перегружен',
+                b:'Пациент добросовестно выполнил всё назначенное — но часть анализов была избыточна и не повлияла на диагноз. Доверие снизилось: «зачем всё это было?»',
+                fact:'Гипердиагностика и избыточные назначения — признанная проблема; порядка 30% медицинских вмешательств в развитых странах избыточны (Brownlee et al., Lancet, 2017).',
+                dh:+1, dt:-2 },
+          dd: { t:'betray', h:'Диагностика провалена',
+                b:'Избыточный, необъяснённый план — и пациент не выполнил его. Диагноз неизвестен. Проблема переходит в следующий визит.',
+                fact:'Неоправданные назначения без объяснений — один из главных факторов потери пациента на этапе обследования.',
+                dh:-2, dt:-3 }
+        }
+      },
+      {
+        tag: 'Акт 1 · Результаты и диагноз',
+        text: 'Результаты обследования получены. Врач должен сообщить диагноз и план лечения. Пациент — решить, насколько он доверяет рекомендациям.',
+        dLabel: '🩺 Как врач сообщает диагноз?',
+        pLabel: '🧑 Как реагирует пациент?',
+        dCoop: ['Честно и понятно', 'Объясняет диагноз, причины, план лечения — без медицинского жаргона'],
+        dBtry: ['Формально и кратко', 'Называет диагноз по МКБ, выписывает направление, не объясняет'],
+        pCoop: ['Принимает план', 'Задаёт вопросы, соглашается с лечением, договаривается о контроле'],
+        pBtry: ['Уходит за советом в интернет', 'Не задаёт вопросов врачу, ищет альтернативы онлайн'],
+        out: {
+          cc: { t:'coop',  h:'Терапевтический союз',
+                b:'Пациент понимает диагноз и принимает его. Формируется терапевтический союз — основа эффективного лечения. Приверженность терапии высокая.',
+                fact:'Терапевтический союз (therapeutic alliance) — один из сильнейших предикторов исходов лечения (Horvath et al., Psychotherapy, 2011).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Врач объяснил — пациент не поверил',
+                b:'Хорошее объяснение не помогло: пациент нашёл в интернете «альтернативное мнение» и засомневался. Приверженность лечению под угрозой.',
+                fact:'Около 72% пациентов ищут медицинскую информацию онлайн после визита к врачу; 40% из них меняют своё отношение к назначениям (Fox & Duggan, Pew Research, 2013).',
+                dh:+1, dt:0 },
+          dc: { t:'mixed', h:'Пациент готов — но ничего не понял',
+                b:'Пациент хотел следовать рекомендациям, но не понял их из-за формального объяснения. Высок риск ошибок при выполнении назначений.',
+                fact:'До 80% медицинской информации, сообщённой врачом, пациент забывает сразу после приёма (Kessels, Journal of the Royal Society of Medicine, 2003).',
+                dh:+1, dt:-2 },
+          dd: { t:'betray', h:'Лечение не начато',
+                b:'Непонятный диагноз, недоверие, интернет-альтернативы. Пациент не начал лечение. Заболевание прогрессирует.',
+                fact:'Низкая медицинская грамотность (health literacy) — независимый фактор риска госпитализаций и смертности (Berkman et al., Annals of Internal Medicine, 2011).',
+                dh:-2, dt:-3 }
+        }
+      }
+    ]
+  },
+
+  {
+    color: 'green',
+    concept: {
+      label: 'Концепция 2',
+      title: 'Повторяющаяся игра (Repeated Game)',
+      text: 'Когда взаимодействие происходит не один раз, а многократно, стратегия меняется. Предательство сегодня влечёт наказание завтра. Поэтому в повторяющихся играх сотрудничество становится рациональным — даже для эгоистичных игроков.',
+      term: 'Тень будущего делает сотрудничество выгодным'
+    },
+    scenario: {
+      label: 'Акт 2 · Сценарий',
+      title: 'Сахарный диабет 2 типа',
+      text: 'Пациенту поставлен диагноз СД 2 типа. Это хроническое заболевание — врач и пациент будут взаимодействовать годами. Именно «повторяемость» этой игры меняет стратегии обоих.'
+    },
+    insight: 'При хронических заболеваниях врач и пациент играют не один раз — а снова и снова на протяжении лет. Теория игр предсказывает: чем длиннее горизонт взаимодействия, тем выгоднее сотрудничество. Именно поэтому хронические пациенты с постоянным врачом имеют лучшие исходы.',
+    real: 'Исследование Continuity of Care (Starfield et al., 2005) показало: пациенты с постоянным лечащим врачом имеют на 25–30% меньше госпитализаций и лучший гликемический контроль при СД 2 типа по сравнению с теми, кто каждый раз видит разного врача.',
+    rounds: [
+      {
+        tag: 'Акт 2 · Изменение образа жизни',
+        text: 'Первый шаг в лечении СД 2 типа — изменение образа жизни (МКБ-10: E11, Алгоритмы специализированной медицинской помощи больным СД, Минздрав РФ, 2023). Врач должен дать рекомендации. Пациент — решить, насколько он готов их выполнять.',
+        dLabel: '🩺 Как врач даёт рекомендации?',
+        pLabel: '🧑 Как пациент их принимает?',
+        dCoop: ['Разбирает реалистично', 'Ставит достижимые цели совместно с пациентом, учитывает его образ жизни'],
+        dBtry: ['Выдаёт стандартный список', 'Распечатывает памятку «худейте и двигайтесь» без обсуждения'],
+        pCoop: ['Готов меняться', 'Обсуждает, что реально выполнимо, договаривается о шагах'],
+        pBtry: ['Формально соглашается', 'Кивает на приёме, но ничего не меняет — «попробую, но вряд ли»'],
+        out: {
+          cc: { t:'coop',  h:'Реалистичный план изменений',
+                b:'Врач и пациент совместно разработали достижимый план. Пациент мотивирован — потому что план его собственный. Шансы на снижение HbA1c через 3 месяца высоки.',
+                fact:'Совместное принятие решений (shared decision-making) увеличивает приверженность изменению образа жизни при СД 2 типа на 34% (Naik et al., Diabetes Care, 2009).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Хорошие советы — нулевая мотивация',
+                b:'Врач дал продуманные рекомендации, но пациент не вовлечён. Через месяц ничего не изменится. Оба будут разочарованы.',
+                fact:'Мотивационное интервью (motivational interviewing) удваивает вероятность изменения поведения при хронических заболеваниях (Rubak et al., British Journal of General Practice, 2005).',
+                dh:0, dt:-1 },
+          dc: { t:'mixed', h:'Пациент хотел — план не помог',
+                b:'Пациент был готов работать над собой, но стандартная памятка не даёт инструментов. Мотивация угасает без конкретных шагов.',
+                fact:'Общие рекомендации «правильно питайтесь и занимайтесь спортом» без персонализации не влияют на поведение (Evert et al., Diabetes Care, 2019).',
+                dh:+1, dt:-2 },
+          dd: { t:'betray', h:'Статус-кво сохранён',
+                b:'Стандартная памятка и формальное согласие. Через 3 месяца HbA1c не изменится. Придётся переходить к фармакотерапии раньше, чем могло бы потребоваться.',
+                fact:'Без реального изменения образа жизни 80% пациентов с СД 2 типа переходят на медикаментозную терапию в течение 3 лет (UKPDS, Lancet, 1998).',
+                dh:-1, dt:-2 }
+        }
+      },
+      {
+        tag: 'Акт 2 · Самоконтроль гликемии',
+        text: 'Через 3 месяца: контрольный визит. Врач оценивает самоконтроль гликемии (согласно Алгоритмам МЗ РФ, 2023: целевой HbA1c ≤7.0% для большинства пациентов). Пациент вёл дневник — или нет.',
+        dLabel: '🩺 Как врач работает с данными?',
+        pLabel: '🧑 Как пациент вёл контроль?',
+        dCoop: ['Анализирует дневник вместе', 'Разбирает паттерны гликемии, корректирует план'],
+        dBtry: ['Смотрит только на HbA1c', 'Оценивает один показатель, игнорирует контекст'],
+        pCoop: ['Вёл структурированный дневник', 'Фиксировал уровень глюкозы, питание, физическую активность'],
+        pBtry: ['Не вёл дневник', 'Приходит без данных: «я так примерно слежу»'],
+        out: {
+          cc: { t:'coop',  h:'Персонализированная коррекция',
+                b:'Дневник выявил постпрандиальные пики гликемии после ужина. Скорректировано питание в вечернее время. Это точечное изменение эффективнее общих рекомендаций.',
+                fact:'Структурированный самоконтроль гликемии снижает HbA1c в среднем на 0.3–0.5% при СД 2 типа на пероральной терапии (Malanda et al., Cochrane, 2012).',
+                dh:+3, dt:+2 },
+          cd: { t:'mixed', h:'Данные есть — врач не работает с ними',
+                b:'Пациент ответственно вёл дневник, но врач ограничился значением HbA1c. Подробные данные проигнорированы. Мотивация вести дневник дальше — под вопросом.',
+                fact:'Самоконтроль без обратной связи от врача неэффективен: эффект исчезает через 6–12 месяцев (Polonsky & Fisher, Diabetes Care, 2013).',
+                dh:+1, dt:-3 },
+          dc: { t:'mixed', h:'Хороший анализ — нет данных для него',
+                b:'Врач готов работать с данными детально, но данных нет. Приходится опираться только на HbA1c — менее информативный показатель для коррекции терапии.',
+                fact:'HbA1c отражает среднюю гликемию за 3 месяца, но не выявляет гипогликемии и постпрандиальных пиков, которые важны для коррекции (Monnier et al., Diabetes Care, 2006).',
+                dh:+1, dt:-1 },
+          dd: { t:'betray', h:'Контроль потерян',
+                b:'Нет данных самоконтроля, оценка только по HbA1c. Если он вырос — непонятно почему и как исправить. Лечение движется вслепую.',
+                fact:'Без регулярного самоконтроля вероятность достижения целевого HbA1c при СД 2 типа снижается в 2 раза (Nathan et al., Diabetes Care, 2009).',
+                dh:-2, dt:-2 }
+        }
+      },
+      {
+        tag: 'Акт 2 · Долгосрочное ведение',
+        text: 'Прошёл год. Пациент пришёл на плановый визит. Врач знает этого пациента — и пациент знает этого врача. «Тень будущего» в действии.',
+        dLabel: '🩺 Как врач ведёт пациента?',
+        pLabel: '🧑 Как пациент относится к визиту?',
+        dCoop: ['Партнёрская модель', 'Обсуждает долгосрочные цели, корректирует план с учётом жизненных изменений'],
+        dBtry: ['Протокольная модель', 'Выполняет стандарт: анализы, осмотр, продление рецепта — и до свидания'],
+        pCoop: ['Активный участник', 'Готовится к визиту, ведёт записи, задаёт вопросы'],
+        pBtry: ['Пассивный получатель', 'Приходит «отметиться», ждёт указаний, не вовлечён'],
+        out: {
+          cc: { t:'coop',  h:'Устойчивый терапевтический союз',
+                b:'Год совместной работы сформировал доверие. Пациент сообщает о проблемах раньше, чем они становятся критическими. Это снижает риск осложнений.',
+                fact:'Длительные отношения с постоянным врачом снижают риск госпитализации при СД на 28% и смертность от сердечно-сосудистых осложнений на 19% (Pereira Gray et al., BMJ Open, 2018).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Вовлечённый пациент, формальный врач',
+                b:'Пациент хочет диалога — врач закрыт. Постепенно пациент тоже теряет мотивацию. Приверженность снизится в следующем цикле.',
+                fact:'Burnout среди врачей снижает качество коммуникации с пациентом и ухудшает исходы при хронических заболеваниях (Shanafelt et al., Mayo Clinic Proceedings, 2012).',
+                dh:+1, dt:-2 },
+          dc: { t:'mixed', h:'Формальный приём, готовый пациент',
+                b:'Пациент пришёл подготовленным, но протокольный приём не использовал этот ресурс. Упущенная возможность.',
+                fact:'Активное участие пациента в приёме связано с лучшим контролем хронических заболеваний — но только при соответствующем стиле общения врача (Street et al., Patient Education and Counseling, 2009).',
+                dh:+1, dt:-1 },
+          dd: { t:'betray', h:'Формальность с обеих сторон',
+                b:'Протокол выполнен, рецепт продлён. Никакой реальной работы с заболеванием. Год потрачен на поддержание статус-кво.',
+                fact:'«Checkbox medicine» — документирование без реального взаимодействия — один из предикторов низкой приверженности лечению и раннего отказа от терапии.',
+                dh:-1, dt:-3 }
+        }
+      }
+    ]
+  },
+
+  {
+    color: 'amber',
+    concept: {
+      label: 'Концепция 3',
+      title: 'Трагедия общин (Tragedy of the Commons)',
+      text: 'Когда ресурс является общим, каждый игрок стремится использовать его максимально — даже понимая, что это ведёт к истощению ресурса для всех. Никто в отдельности не несёт полной ответственности за коллективный вред.',
+      term: 'Рациональное поведение индивида — катастрофа для всех'
+    },
+    scenario: {
+      label: 'Акт 3 · Сценарий',
+      title: 'Антибиотикорезистентность',
+      text: 'Антибиотики — общий ресурс человечества. Каждое избыточное или неправильное применение снижает их эффективность для всех. По прогнозу ВОЗ, к 2050 году устойчивость к антибиотикам может вызывать 10 млн смертей ежегодно.'
+    },
+    insight: 'Антибиотикорезистентность — идеальная иллюстрация трагедии общин. Каждый врач и каждый пациент действуют рационально в краткосрочной перспективе. Но совокупный эффект — истощение одного из важнейших медицинских ресурсов.',
+    real: 'По данным ECDC (2022), в Европе ежегодно от инфекций, вызванных устойчивыми микроорганизмами, умирают около 35 000 человек. Россия входит в число стран с высоким уровнем потребления антибиотиков без рецепта (ВОЗ, Global Antimicrobial Resistance Surveillance System, 2023).',
+    rounds: [
+      {
+        tag: 'Акт 3 · Назначение антибиотика',
+        text: 'Пациент обратился с ОРВИ. Клиническая картина — вирусная инфекция, антибиотики не показаны. Пациент настаивает: «В прошлый раз помогло».',
+        dLabel: '🩺 Что делает врач?',
+        pLabel: '🧑 Что делает пациент?',
+        dCoop: ['Объясняет и не назначает', 'Объясняет разницу между вирусом и бактерией, назначает симптоматическую терапию'],
+        dBtry: ['Назначает «для спокойствия»', 'Выписывает антибиотик, чтобы избежать конфликта и ускорить приём'],
+        pCoop: ['Принимает объяснение', 'Понимает, что антибиотик при ОРВИ не нужен, соглашается с планом'],
+        pBtry: ['Требует антибиотик', 'Настаивает, угрожает жалобой, ссылается на прошлый опыт'],
+        out: {
+          cc: { t:'coop',  h:'Рациональное решение',
+                b:'Антибиотик не назначен обоснованно. Пациент получил симптоматическую терапию. Один случай антибиотикорезистентности не развился.',
+                fact:'ОРВИ в 85–95% случаев вызвана вирусами; антибиотики при вирусных инфекциях не эффективны и ускоряют развитие резистентности (WHO, 2023).',
+                dh:+2, dt:+3 },
+          cd: { t:'mixed', h:'Врач устоял — пациент не понял почему',
+                b:'Антибиотик не назначен — это правильно. Но пациент ушёл неудовлетворённым и не понял логику решения. Вероятно, купит антибиотик самостоятельно в аптеке.',
+                fact:'В России около 30–40% антибиотиков приобретается без рецепта (Государственный реестр ЛП; данные НМИЦ АМР, 2022).',
+                dh:+2, dt:0 },
+          dc: { t:'mixed', h:'Пациент понял — врач назначил лишнее',
+                b:'Пациент был готов принять отказ — но врач назначил антибиотик. Ресурс использован без пользы для пациента и во вред системе.',
+                fact:'Избыточное назначение антибиотиков врачами — главный модифицируемый фактор роста резистентности в стационарах (Davey et al., Cochrane, 2017).',
+                dh:0, dt:-1 },
+          dd: { t:'betray', h:'Антибиотик назначен без показаний',
+                b:'Конфликт избежан, пациент доволен. Но антибиотик назначен без клинических оснований. Вклад в общую проблему резистентности сделан.',
+                fact:'Каждый лишний курс антибиотика повышает индивидуальный риск носительства резистентных штаммов на срок до 12 месяцев (Goossens et al., Lancet, 2005).',
+                dh:-1, dt:-3 }
+        }
+      },
+      {
+        tag: 'Акт 3 · Соблюдение курса',
+        text: 'Антибиотик назначен обоснованно (бактериальная инфекция, подтверждённая клинически). Стандартный курс амоксициллина — 7 дней. На 4-й день пациенту значительно лучше.',
+        dLabel: '🩺 Как врач объяснил курс?',
+        pLabel: '🧑 Что делает пациент на 4-й день?',
+        dCoop: ['Объяснил механизм', 'Предупредил: улучшение ≠ исчезновение бактерий, объяснил риск прерывания'],
+        dBtry: ['Просто выписал рецепт', 'Не объяснил важность полного курса'],
+        pCoop: ['Продолжает курс', 'Принимает препарат все 7 дней несмотря на улучшение'],
+        pBtry: ['Прекращает приём', 'Чувствует себя хорошо — зачем пить дальше?'],
+        out: {
+          cc: { t:'coop',  h:'Курс завершён',
+                b:'Пациент понял механизм — и завершил курс. Бактерии уничтожены полностью. Риск рецидива и формирования резистентных штаммов минимален.',
+                fact:'Преждевременное прекращение курса антибиотиков создаёт селективное давление: выживают наиболее устойчивые бактерии (WHO AMR Action Plan, 2015).',
+                dh:+3, dt:+2 },
+          cd: { t:'mixed', h:'Пациент не понял важности',
+                b:'Врач не объяснил — пациент остановился при улучшении. Субпопуляция бактерий с частичной устойчивостью могла выжить.',
+                fact:'До 60% пациентов прекращают приём антибиотиков раньше окончания курса при отсутствии объяснений от врача (Kardas et al., Journal of Antimicrobial Chemotherapy, 2005).',
+                dh:+1, dt:-1 },
+          dc: { t:'mixed', h:'Предупреждён — всё равно прекратил',
+                b:'Врач объяснил всё правильно. Пациент решил иначе. Автономия пациента важна, но в данном случае она создаёт риск для него и для окружающих.',
+                fact:'Информированность о механизме резистентности снижает, но не исключает раннее прекращение курса (Llor & Bjerrum, Therapeutic Advances in Drug Safety, 2014).',
+                dh:0, dt:-1 },
+          dd: { t:'betray', h:'Незавершённый курс — максимальный риск',
+                b:'Ни объяснения, ни соблюдения курса. Высокий риск рецидива инфекции и формирования устойчивых штаммов.',
+                fact:'Незавершённые курсы бета-лактамных антибиотиков — один из главных факторов распространения пенициллин-резистентного S. pneumoniae (Feldman & Goldenberg, Paediatric Respiratory Reviews, 2004).',
+                dh:-2, dt:-2 }
+        }
+      },
+      {
+        tag: 'Акт 3 · Системный выбор',
+        text: 'Врач работает в поликлинике с высокой нагрузкой. Средний приём — 12 минут. Он видит третьего подряд пациента с ОРВИ, требующего «что-нибудь посерьёзнее». Это системная ситуация, не индивидуальная.',
+        dLabel: '🩺 Как врач действует системно?',
+        pLabel: '🧑 Как пациент относится к системе?',
+        dCoop: ['Придерживается протокола', 'Несмотря на давление и нагрузку — не назначает антибиотики без показаний'],
+        dBtry: ['Идёт по пути наименьшего сопротивления', 'Назначает антибиотик — быстрее, меньше конфликтов'],
+        pCoop: ['Доверяет доказательной медицине', 'Понимает: врач следует протоколу, а не экономит'],
+        pBtry: ['Требует «лечение», а не «наблюдение»', 'Считает отказ от антибиотика халтурой, жалуется'],
+        out: {
+          cc: { t:'coop',  h:'Коллективная рациональность',
+                b:'Врач и пациент вместе преодолевают давление системы. Трагедия общин предотвращена на уровне одного взаимодействия. Именно из таких взаимодействий складывается национальный уровень AMR.',
+                fact:'Антибиотикостюардшип (Antimicrobial Stewardship Programs) — системный подход к рациональному применению антибиотиков — снижает потребление на 20–30% без ухудшения исходов (Davey et al., Cochrane, 2017).',
+                dh:+2, dt:+3 },
+          cd: { t:'mixed', h:'Врач устоял — но в одиночку',
+                b:'Врач следует доказательной медицине, но пациент уходит недовольным. Без системной поддержки (обучение пациентов, информационные кампании) врач несёт весь груз в одиночку.',
+                fact:'Индивидуальные усилия врачей без системной поддержки малоэффективны для снижения потребления антибиотиков на популяционном уровне (WHO, 2019).',
+                dh:+1, dt:0 },
+          dc: { t:'mixed', h:'Пациент готов — система не помогла',
+                b:'Грамотный пациент готов принять рекомендацию — но перегруженный врач «сдался». Образованные пациенты без правильных врачей не меняют статистику.',
+                fact:'Население с высокой медицинской грамотностью потребляет меньше антибиотиков — но только при наличии врачей, соблюдающих протоколы (Formoso et al., BMJ, 2013).',
+                dh:0, dt:-2 },
+          dd: { t:'betray', h:'Трагедия общин в действии',
+                b:'Никто не несёт ответственности — ни врач, ни пациент. Каждый действует рационально в своей ситуации. Но именно из таких решений складывается 10 млн прогнозируемых смертей к 2050 году.',
+                fact:'ВОЗ: «Antimicrobial resistance is one of the biggest threats to global health, food security, and development» (WHO, 2023).',
+                dh:-2, dt:-3 }
+        }
+      }
+    ]
+  },
+
+  {
+    color: 'red',
+    concept: {
+      label: 'Концепция 4',
+      title: 'Игра с нулевой суммой vs. ненулевой суммой',
+      text: 'В игре с нулевой суммой выигрыш одного — это всегда проигрыш другого. В игре с ненулевой суммой возможно, чтобы оба выиграли — или оба проиграли. Понять, в какую игру вы играете, критически важно для выбора стратегии.',
+      term: 'Не всегда чужой проигрыш — ваш выигрыш'
+    },
+    scenario: {
+      label: 'Акт 4 · Сценарий',
+      title: 'Пациент и страховая медицина',
+      text: 'Пациент с полисом ОМС/ДМС нуждается в дорогостоящем обследовании. Страховая организация стремится минимизировать выплаты. Врач находится между ними. Кажется, что это игра с нулевой суммой — но так ли это?'
+    },
+    insight: 'На первый взгляд кажется: страховая экономит — пациент теряет. Игра с нулевой суммой. Но на самом деле это игра с ненулевой суммой: если пациент не получает лечение вовремя, он попадает в стационар, что стоит системе в 5–10 раз дороже. Все проигрывают.',
+    real: 'Экономика профилактики vs. лечения: 1 рубль, вложенный в профилактику и раннюю диагностику, экономит от 3 до 10 рублей на последующем лечении осложнений (ВОЗ, «Экономика здоровья», 2019). Отказ в покрытии дорогого обследования сегодня — более дорогое лечение завтра.',
+    rounds: [
+      {
+        tag: 'Акт 4 · Обоснование обследования',
+        text: 'Врач считает необходимым МРТ головного мозга для пациента с неврологической симптоматикой. Страховая запрашивает обоснование. Пациент в тревоге.',
+        dLabel: '🩺 Как врач обосновывает?',
+        pLabel: '🧑 Как пациент участвует?',
+        dCoop: ['Детальное клиническое обоснование', 'Пишет развёрнутое направление с симптоматикой и дифференциальным диагнозом'],
+        dBtry: ['Минимальное обоснование', 'Стандартная формулировка без клинических деталей'],
+        pCoop: ['Поддерживает врача', 'Предоставляет все предыдущие исследования, участвует в апелляции при необходимости'],
+        pBtry: ['Пассивно ждёт', 'Не участвует, считает «это не моё дело»'],
+        out: {
+          cc: { t:'coop',  h:'Обоснование принято',
+                b:'Детальное клиническое описание и участие пациента увеличили шансы одобрения. Обследование назначено. Все три стороны в выигрыше — это игра с ненулевой суммой.',
+                fact:'Качество клинического обоснования — ключевой фактор при рассмотрении направлений страховыми организациями (ФФОМС, Методические рекомендации, 2021).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Врач постарался — пациент не помог',
+                b:'Хорошее обоснование снизило шансы отказа, но без дополнительных документов от пациента страховая запросила уточнения. Задержка.',
+                fact:'Привлечение пациента к процессу согласования ускоряет одобрение и снижает число отказов при апелляции.',
+                dh:+1, dt:0 },
+          dc: { t:'mixed', h:'Пациент готов — документы слабые',
+                b:'Пациент принёс все справки, но слабое обоснование от врача привело к отказу. Пациент не понимает, почему — и считает, что врач «не захотел помочь».',
+                fact:'До 40% первичных отказов страховых связаны с недостаточным документальным обоснованием, а не с клинической нецелесообразностью (анализ ТФОМС, 2022).',
+                dh:0, dt:-2 },
+          dd: { t:'betray', h:'Отказ — задержка — осложнения',
+                b:'Слабое обоснование + пассивный пациент = отказ. Диагностика задержана. Это кажется выигрышем страховой — но отложенная диагностика обойдётся дороже.',
+                fact:'Задержка МРТ при подозрении на демиелинизирующее заболевание на 3–6 месяцев ухудшает прогноз и увеличивает стоимость последующего лечения в 3–4 раза.',
+                dh:-3, dt:-2 }
+        }
+      },
+      {
+        tag: 'Акт 4 · Апелляция',
+        text: 'Страховая отказала. Врач и пациент могут подать апелляцию (право гарантировано ФЗ-326 «Об обязательном медицинском страховании», ст. 16). Это требует усилий от обоих.',
+        dLabel: '🩺 Что делает врач?',
+        pLabel: '🧑 Что делает пациент?',
+        dCoop: ['Инициирует апелляцию', 'Готовит медицинское заключение, обращается к главному специалисту'],
+        dBtry: ['Принимает отказ', 'Говорит пациенту: «Так решила страховая, ничего не поделаешь»'],
+        pCoop: ['Подаёт апелляцию', 'Пишет заявление, привлекает страхового представителя ТФОМС'],
+        pBtry: ['Опускает руки', 'Не знает о праве на апелляцию, не действует'],
+        out: {
+          cc: { t:'coop',  h:'Апелляция удовлетворена',
+                b:'Совместные усилия привели к пересмотру решения. Обследование одобрено. Это игра с ненулевой суммой: система в целом выигрывает от правильной маршрутизации.',
+                fact:'По данным ФФОМС, около 60% апелляций по отказам в дорогостоящих обследованиях решаются в пользу пациента при наличии детального клинического обоснования.',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Пациент действовал — врач нет',
+                b:'Пациент подал апелляцию самостоятельно, но без медицинского заключения шансы невысоки. Врач устранился от ответственности.',
+                fact:'Страховой представитель ТФОМС (омбудсмен) обязан помочь пациенту оформить апелляцию — обратитесь в ТФОМС своего региона.',
+                dh:+1, dt:-2 },
+          dc: { t:'mixed', h:'Врач готов — пациент не знает своих прав',
+                b:'Врач подготовил документы, но без заявления от пациента апелляция невозможна. Правовая неграмотность пациента остановила процесс.',
+                fact:'По опросам Росздравнадзора (2021), лишь 23% граждан знают о праве на апелляцию страховых решений в системе ОМС.',
+                dh:+1, dt:-1 },
+          dd: { t:'betray', h:'Отказ принят',
+                b:'Никто не действовал. Пациент либо платит за обследование сам, либо откладывает его. Страховая «сэкономила» — но заложила более дорогой исход.',
+                fact:'Экономия страховой на одном отказном КТ/МРТ (5–15 тыс. руб.) в среднем оборачивается расходами на госпитализацию 80–300 тыс. руб. при позднем выявлении патологии.',
+                dh:-3, dt:-3 }
+        }
+      },
+      {
+        tag: 'Акт 4 · Системный взгляд',
+        text: 'Пациент понял: страховая — не враг, а игрок с другими интересами. Врач понял: бюрократия — часть игры. Как выстроить взаимодействие, которое выгодно всем?',
+        dLabel: '🩺 Стратегия врача в системе?',
+        pLabel: '🧑 Стратегия пациента в системе?',
+        dCoop: ['Системный подход', 'Выстраивает шаблоны обоснований, знает протоколы страховой, обучает пациентов правам'],
+        dBtry: ['Конфронтационный подход', 'Считает страховую врагом, не тратит время на документацию'],
+        pCoop: ['Информированный пациент', 'Знает свои права, ведёт медицинскую документацию, задаёт вопросы'],
+        pBtry: ['Пассивный потребитель', 'Считает, что в системе ничего нельзя изменить'],
+        out: {
+          cc: { t:'coop',  h:'Все выигрывают',
+                b:'Врач, знающий систему, и пациент, знающий свои права, превращают кажущуюся игру с нулевой суммой в игру с ненулевой. Профилактика, ранняя диагностика, меньше осложнений.',
+                fact:'Системы здравоохранения с высокой медицинской грамотностью населения и хорошо документированными клиническими решениями имеют лучшие исходы при меньших затратах (WHO, 2019).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Образованный пациент в плохой системе',
+                b:'Пациент готов к диалогу, но врач в конфронтации со страховой создаёт барьеры. Усилия пациента теряются в системном конфликте.',
+                fact:'Качество взаимодействия «врач — страховая» влияет на исходы пациента сильнее, чем информированность самого пациента.',
+                dh:+1, dt:-1 },
+          dc: { t:'mixed', h:'Хороший врач — пассивный пациент',
+                b:'Системный врач создаёт возможности, но пассивный пациент ими не пользуется. Половина потенциала теряется.',
+                fact:'Активация пациента (patient activation) — измеримый показатель; пациенты с высоким PAM-score имеют на 21% лучшие исходы (Hibbard et al., Health Affairs, 2007).',
+                dh:+2, dt:-1 },
+          dd: { t:'betray', h:'Все проигрывают — кажется, что это нормально',
+                b:'Конфронтация + пассивность = неэффективная система. Все привыкли к этому как к норме. Но это не норма — это равновесие, из которого можно выйти.',
+                fact:'«Выученная беспомощность» в медицине — реальный феномен: пациенты, убеждённые в бесполезности активных действий, имеют худшие исходы хронических заболеваний.',
+                dh:-2, dt:-3 }
+        }
+      }
+    ]
+  },
+
+  {
+    color: 'purple',
+    concept: {
+      label: 'Концепция 5',
+      title: 'Равновесие Нэша (Nash Equilibrium)',
+      text: 'Равновесие Нэша — состояние, при котором ни один игрок не может улучшить свой результат, изменив стратегию в одностороннем порядке, если все остальные сохраняют свои стратегии. Равновесие может быть плохим для всех — но устойчивым, потому что у никого нет стимула выходить из него в одиночку.',
+      term: 'Стабильность ≠ оптимальность'
+    },
+    scenario: {
+      label: 'Акт 5 · Сценарий',
+      title: 'Система здравоохранения',
+      text: 'Врачи перегружены и выгорают. Пациенты недовольны качеством помощи. Страховые экономят. Государство недофинансирует. Никто не может изменить ситуацию в одиночку — это равновесие Нэша. Но равновесие можно сдвинуть.'
+    },
+    insight: 'Текущее состояние здравоохранения во многих странах — это равновесие Нэша, которое плохо для всех участников, но устойчиво, потому что у каждого нет стимула менять стратегию первым. Выход — скоординированные изменения нескольких игроков одновременно.',
+    real: 'Реформы здравоохранения, изменившие равновесие: внедрение системы DRG (клинико-статистических групп) в США создало новые стимулы для больниц; цифровые платформы мониторинга хронических заболеваний (telemedicine) меняют стратегии и врачей, и пациентов одновременно.',
+    rounds: [
+      {
+        tag: 'Акт 5 · Выгорание врача',
+        text: 'Врач видит 30+ пациентов в день. Системная перегрузка снижает качество каждого приёма. Пациент не понимает, почему «врач не хочет разговаривать». Это не личный конфликт — это системное равновесие.',
+        dLabel: '🩺 Как врач реагирует на перегрузку?',
+        pLabel: '🧑 Как пациент реагирует на формальность?',
+        dCoop: ['Сигнализирует о проблеме', 'Документирует нагрузку, участвует в профессиональных объединениях, ищет поддержку'],
+        dBtry: ['Адаптируется молча', 'Работает «на автомате», принимает деградацию качества как норму'],
+        pCoop: ['Понимает системный контекст', 'Не персонализирует формальность, поддерживает профессиональные сообщества врачей'],
+        pBtry: ['Жалуется на конкретного врача', 'Пишет жалобу на «грубого доктора», не видя системной причины'],
+        out: {
+          cc: { t:'coop',  h:'Системное мышление',
+                b:'Оба видят проблему на системном уровне. Индивидуальные жалобы и молчаливое принятие — поддерживают плохое равновесие. Системное мышление — первый шаг к его изменению.',
+                fact:'Burnout у врачей увеличивает число медицинских ошибок в 2 раза (Shanafelt et al., JAMA, 2010) и снижает удовлетворённость пациентов на 30%.',
+                dh:+2, dt:+3 },
+          cd: { t:'mixed', h:'Врач борется — пациент не видит',
+                b:'Врач пытается изменить систему, но пациент жалуется на него же. Это поддерживает равновесие и снижает мотивацию врача продолжать.',
+                fact:'Профессиональные сообщества врачей — один из наиболее эффективных механизмов системных изменений в здравоохранении (Bohmer, NEJM, 2010).',
+                dh:+1, dt:-2 },
+          dc: { t:'mixed', h:'Пациент понимает — врач принял',
+                b:'Понимающий пациент не может изменить систему за врача. Если врач принял деградацию как норму — равновесие устойчиво.',
+                fact:'Выход из плохого равновесия Нэша требует изменения стратегии хотя бы одного игрока и соответствующего изменения стимулов (Myerson, Game Theory, 1991).',
+                dh:+1, dt:-1 },
+          dd: { t:'betray', h:'Равновесие стабилизировано',
+                b:'Молчаливое принятие со стороны врача и жалобы на конкретных людей со стороны пациентов — именно это держит систему в плохом равновесии.',
+                fact:'Системы с высоким уровнем burnout среди врачей и низким доверием пациентов к системе имеют худшие популяционные исходы здоровья (WHO, 2021).',
+                dh:-2, dt:-3 }
+        }
+      },
+      {
+        tag: 'Акт 5 · Цифровые технологии',
+        text: 'Появляется новый инструмент: платформа для дистанционного мониторинга хронических заболеваний. Врач может сократить число рутинных визитов. Пациент — получить лучший контроль. Это потенциальное смещение равновесия.',
+        dLabel: '🩺 Как врач относится к новому инструменту?',
+        pLabel: '🧑 Как пациент относится к цифровому мониторингу?',
+        dCoop: ['Внедряет осмысленно', 'Обучает пациентов, интегрирует данные в клиническое решение'],
+        dBtry: ['Игнорирует или формализует', 'Подключает формально для галочки, не работает с данными'],
+        pCoop: ['Активно использует', 'Регулярно вносит данные, использует для самоконтроля'],
+        pBtry: ['Не доверяет технологии', 'Считает приложение бесполезным, не использует'],
+        out: {
+          cc: { t:'coop',  h:'Новое равновесие',
+                b:'Цифровой инструмент снизил число рутинных визитов на 30%, освободив время врача для сложных случаев. Пациент получил лучший контроль. Равновесие сдвинулось.',
+                fact:'Телемедицинский мониторинг при СД 2 типа снижает число экстренных госпитализаций на 25% и уменьшает HbA1c в среднем на 0.5% (Marcolino et al., JMIR, 2018).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Инструмент есть — данные игнорируются',
+                b:'Пациент аккуратно вносит данные, но врач на них не смотрит. Инструмент стал бюрократическим артефактом вместо клинического.',
+                fact:'Внедрение цифровых инструментов без изменения клинических процессов не улучшает исходы (Kruse et al., Journal of Medical Internet Research, 2018).',
+                dh:+1, dt:-2 },
+          dc: { t:'mixed', h:'Врач готов — пациент не участвует',
+                b:'Врач выстроил процесс работы с данными, но данных нет. Потенциал технологии не реализован.',
+                fact:'Долгосрочная приверженность цифровому мониторингу без регулярной обратной связи от врача падает до 20–30% через 6 месяцев (Torous et al., World Psychiatry, 2018).',
+                dh:+1, dt:0 },
+          dd: { t:'betray', h:'Технология не изменила равновесие',
+                b:'Новый инструмент не сдвинул равновесие — потому что ни у кого нет стимула использовать его по-настоящему. Это классическая ловушка цифровизации ради цифровизации.',
+                fact:'По оценкам McKinsey Health Institute (2022), до 70% цифровых инициатив в здравоохранении не достигают заявленных результатов из-за проблем с принятием пользователями.',
+                dh:-1, dt:-2 }
+        }
+      },
+      {
+        tag: 'Акт 5 · Финальный выбор',
+        text: 'Последняя ситуация игры. Вы знаете пять концепций теории игр. Перед вами — выбор о роли медицины будущего. Какую стратегию вы поддерживаете?',
+        dLabel: '🏥 Подход к системе здравоохранения?',
+        pLabel: '🧑 Роль пациента в системе?',
+        dCoop: ['Превентивная медицина', 'Инвестиции в профилактику, раннюю диагностику, медицинскую грамотность населения'],
+        dBtry: ['Реактивная медицина', 'Лечить болезни по мере возникновения, минимизировать текущие затраты'],
+        pCoop: ['Активный участник', 'Инвестирует в своё здоровье: профилактика, мониторинг, информированность'],
+        pBtry: ['Пассивный потребитель', 'Обращается к системе только при острой необходимости'],
+        out: {
+          cc: { t:'coop',  h:'Игра с положительной суммой',
+                b:'Превентивная система + активный пациент = максимально возможный исход для всех игроков. Равновесие Нэша сдвинулось в сторону, выгодной для всех.',
+                fact:'По расчётам ВОЗ, каждый доллар, вложенный в профилактику неинфекционных заболеваний, возвращает 7 долларов в виде снижения затрат на лечение и роста производительности (WHO, 2018).',
+                dh:+3, dt:+3 },
+          cd: { t:'mixed', h:'Система готова — пациент нет',
+                b:'Профилактическая система без вовлечённых пациентов работает вполсилы. Скрининги игнорируются, ранние сигналы не отслеживаются.',
+                fact:'Охват скринингом онкологических заболеваний в России — 30–40% от целевых показателей (Минздрав РФ, 2022). Главная причина — низкая явка.',
+                dh:+2, dt:0 },
+          dc: { t:'mixed', h:'Активный пациент — реактивная система',
+                b:'Информированный пациент приходит к врачу — а система не готова работать с ним в превентивном режиме. Ранние сигналы теряются.',
+                fact:'Реактивная система здравоохранения обходится в 2–3 раза дороже превентивной при сопоставимых исходах (OECD Health Statistics, 2022).',
+                dh:+2, dt:-1 },
+          dd: { t:'betray', h:'Максимально дорогая и неэффективная система',
+                b:'Реактивная медицина + пассивные пациенты = самая дорогая и наименее эффективная конфигурация. Это и есть плохое равновесие Нэша, которое мы пытались изменить пять актов.',
+                fact:'США тратят на здравоохранение больше всех в мире (18% ВВП), но имеют худшие исходы среди развитых стран отчасти из-за реактивной модели (Commonwealth Fund, 2021).',
+                dh:-3, dt:-3 }
+        }
+      }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let actIdx = 0, roundIdx = 0;
+let health = 5, trust = 5;
+let history = [];
+let actHistory = [[], [], [], [], []];
+let dCh = null, pCh = null;
+
+const ACT_COLORS = ['teal','green','amber','red','purple'];
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function setColor(el, color) {
+  ['teal','green','amber','red','purple'].forEach(c => el.classList.remove(c));
+  el.classList.add(color);
+}
+
+function renderHistory(elId, arr) {
+  document.getElementById(elId).innerHTML =
+    arr.map((h, i) => `<div class="h-chip ${h}">${i+1} ${h.toUpperCase()}</div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   FLOW
+══════════════════════════════════════ */
+function startGame() {
+  actIdx = 0; roundIdx = 0;
+  health = 5; trust = 5;
+  history = []; actHistory = [[], [], [], [], []];
+  showActIntro();
+}
+
+function showActIntro() {
+  const act = ACTS[actIdx];
+  const color = ACT_COLORS[actIdx];
+
+  document.getElementById('ai-num').textContent = actIdx + 1;
+
+  const cc = document.getElementById('ai-concept-card');
+  setColor(cc, color);
+  document.getElementById('ai-concept-label').textContent = act.concept.label;
+  document.getElementById('ai-concept-title').textContent = act.concept.title;
+  document.getElementById('ai-concept-text').textContent  = act.concept.text;
+  document.getElementById('ai-concept-term').textContent  = act.concept.term;
+
+  document.getElementById('ai-scenario-label').textContent = act.scenario.label;
+  document.getElementById('ai-scenario-title').textContent = act.scenario.title;
+  document.getElementById('ai-scenario-text').textContent  = act.scenario.text;
+
+  show('s-act-intro');
+}
+
+function startAct() { roundIdx = 0; showRound(); }
+
+function showRound() {
+  const act = ACTS[actIdx];
+  const r   = act.rounds[roundIdx];
+  const color = ACT_COLORS[actIdx];
+  dCh = null; pCh = null;
+
+  const totalRounds = ACTS.reduce((s, a) => s + a.rounds.length, 0);
+  const prevRounds  = ACTS.slice(0, actIdx).reduce((s, a) => s + a.rounds.length, 0);
+  const globalRound = prevRounds + roundIdx + 1;
+
+  document.getElementById('r-act').textContent   = actIdx + 1;
+  document.getElementById('r-round').textContent = roundIdx + 1;
+  document.getElementById('v-h').textContent = health;
+  document.getElementById('v-t').textContent = trust;
+  document.getElementById('r-progress').style.width = (globalRound / totalRounds * 100) + '%';
+
+  const tag = document.getElementById('r-tag');
+  tag.textContent = r.tag;
+  setColor(tag, color);
+
+  document.getElementById('r-scenario').textContent = r.text;
+  document.getElementById('r-label-doc').textContent = r.dLabel;
+  document.getElementById('r-label-pat').textContent = r.pLabel;
+
+  document.getElementById('r-choices-doc').innerHTML = mkChoices('d', r.dCoop, r.dBtry);
+  document.getElementById('r-choices-pat').innerHTML = mkChoices('p', r.pCoop, r.pBtry);
+  document.getElementById('r-confirm').disabled = true;
+
+  show('s-round');
+}
+
+function mkChoices(who, coop, btry) {
+  return `
+    <button class="choice-btn" id="${who}-c" onclick="sel('${who}','c')">
+      <div class="cb-title">${coop[0]}</div><div class="cb-desc">${coop[1]}</div>
+    </button>
+    <button class="choice-btn" id="${who}-d" onclick="sel('${who}','d')">
+      <div class="cb-title">${btry[0]}</div><div class="cb-desc">${btry[1]}</div>
+    </button>`;
+}
+
+function sel(who, ch) {
+  if (who === 'd') {
+    dCh = ch;
+    document.getElementById('d-c').classList.toggle('selected', ch === 'c');
+    document.getElementById('d-d').classList.toggle('selected', ch === 'd');
+  } else {
+    pCh = ch;
+    document.getElementById('p-c').classList.toggle('selected', ch === 'c');
+    document.getElementById('p-d').classList.toggle('selected', ch === 'd');
+  }
+  document.getElementById('r-confirm').disabled = !(dCh && pCh);
+}
+
+function confirmRound() {
+  const r   = ACTS[actIdx].rounds[roundIdx];
+  const key = dCh + pCh;
+  const o   = r.out[key];
+
+  history.push(key);
+  actHistory[actIdx].push(key);
+  health = Math.min(10, Math.max(0, health + o.dh));
+  trust  = Math.min(10, Math.max(0, trust  + o.dt));
+
+  document.getElementById('res-act').textContent   = actIdx + 1;
+  document.getElementById('res-round').textContent = roundIdx + 1;
+
+  document.getElementById('res-outcome').innerHTML = `
+    <div class="outcome-card ${o.t}">
+      <div class="outcome-title">${o.h}</div>
+      <div class="outcome-text">${o.b}</div>
+      <div class="fact-row"><b>Факт:</b> ${o.fact}</div>
+    </div>`;
+
+  document.getElementById('res-h').textContent = health;
+  document.getElementById('res-t').textContent = trust;
+  document.getElementById('res-bar-h').style.width = (health * 10) + '%';
+  document.getElementById('res-bar-t').style.width = (trust * 10) + '%';
+
+  renderHistory('res-history', history);
+
+  const isLastRound = roundIdx >= ACTS[actIdx].rounds.length - 1;
+  const isLastAct   = actIdx >= ACTS.length - 1;
+  document.getElementById('res-next').textContent =
+    isLastRound && isLastAct ? 'Итоги игры →' :
+    isLastRound ? 'Итоги акта →' : 'Следующая ситуация →';
+
+  show('s-result');
+}
+
+function nextStep() {
+  const isLastRound = roundIdx >= ACTS[actIdx].rounds.length - 1;
+  if (isLastRound) {
+    showInsight();
+  } else {
+    roundIdx++;
+    showRound();
+  }
+}
+
+function showInsight() {
+  const act   = ACTS[actIdx];
+  const color = ACT_COLORS[actIdx];
+  const isLast = actIdx >= ACTS.length - 1;
+
+  document.getElementById('ins-act').textContent = actIdx + 1;
+
+  const cc = document.getElementById('ins-concept-card');
+  setColor(cc, color);
+  document.getElementById('ins-concept-label').textContent = act.concept.label;
+  document.getElementById('ins-concept-title').textContent = act.concept.title;
+
+  document.getElementById('ins-text').textContent = act.insight;
+  document.getElementById('ins-real').textContent = act.real;
+
+  renderHistory('ins-history', actHistory[actIdx]);
+
+  document.getElementById('ins-next').textContent = isLast ? 'Итоги игры →' : 'Следующий акт →';
+  show('s-insight');
+}
+
+function nextAct() {
+  actIdx++;
+  if (actIdx >= ACTS.length) { showFinal(); return; }
+  showActIntro();
+}
+
+function showFinal() {
+  const coops   = history.filter(h => h === 'cc').length;
+  const betrays = history.filter(h => h === 'dd').length;
+  const total   = history.length;
+
+  document.getElementById('fin-h').textContent = health + '/10';
+  document.getElementById('fin-t').textContent = trust + '/10';
+  document.getElementById('fin-bar-h').style.width = (health * 10) + '%';
+  document.getElementById('fin-bar-t').style.width = (trust * 10) + '%';
+
+  let title, sub, insight;
+  if (coops / total >= 0.8) {
+    title   = 'Мастер сотрудничества';
+    sub     = `Сотрудничество в ${coops} из ${total} ситуаций`;
+    insight = 'Вы интуитивно выбирали стратегии с ненулевой суммой. В реальной медицине это означает: лучшие исходы для пациентов, меньшее выгорание для врачей и более эффективное использование ресурсов системы.';
+  } else if (coops / total >= 0.5) {
+    title   = 'Прагматик';
+    sub     = `Сотрудничество в ${coops} из ${total} ситуаций`;
+    insight = 'Вы находили баланс, но не всегда. Теория игр подсказывает: в медицинских взаимодействиях, как правило, это игры с ненулевой суммой. Чем чаще вы выбираете сотрудничество, тем лучше для всех игроков.';
+  } else if (betrays / total >= 0.5) {
+    title   = 'Стратег краткосрочной выгоды';
+    sub     = `Предательство в ${betrays} из ${total} ситуаций`;
+    insight = 'Краткосрочно ваши выборы казались логичными. Но в повторяющихся играх и играх с ненулевой суммой они ведут к худшему долгосрочному равновесию. Именно это и происходит в системах здравоохранения с низким доверием.';
+  } else {
+    title   = 'Игрок в поиске';
+    sub     = 'Смешанная стратегия';
+    insight = 'Ваши выборы отражают реальную сложность медицинских взаимодействий. Теория игр не даёт простых ответов — но помогает видеть структуру ситуации и понимать, почему системы застревают в плохих равновесиях.';
+  }
+
+  document.getElementById('fin-title').textContent = title;
+  document.getElementById('fin-sub').textContent   = sub;
+  document.getElementById('fin-insight').textContent = insight;
+
+  const actNames = ['Дилемма заключённого', 'Повторяющаяся игра', 'Трагедия общин', 'Нулевая/ненулевая сумма', 'Равновесие Нэша'];
+  const summaryEl = document.getElementById('fin-summary');
+  summaryEl.innerHTML = ACTS.map((_, i) => {
+    const ah = actHistory[i];
+    const cc = ah.filter(h => h === 'cc').length;
+    return `<div class="summary-row">
+      <div class="summary-act">${i+1}. ${actNames[i]}</div>
+      <div class="summary-score">${cc}/${ah.length} CC</div>
+    </div>`;
+  }).join('');
+
+  renderHistory('fin-history', history);
+  show('s-final');
+}
+
+function shareResult() {
+  const coops = history.filter(h => h === 'cc').length;
+  const text  = `Прошёл игру «Теория игр в медицине» от Digital in Pharma\n❤️ Здоровье: ${health}/10  🤝 Доверие: ${trust}/10\nСотрудничество в ${coops} из ${history.length} ситуаций\nt.me/digitalinpharma`;
+  if (tg && tg.switchInlineQuery) tg.switchInlineQuery(text);
+  else if (navigator.share) navigator.share({ text });
+}
+
+function restartGame() { startGame(); }
+</script>
+</body>
+</html>
