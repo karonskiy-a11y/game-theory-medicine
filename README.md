@@ -1,6 +1,6 @@
 # Теория игр в медицине
 
-Образовательная интерактивная игра для Telegram — от канала [Digital in Pharma]([https://t.me/digitalinpharma]).
+Образовательная интерактивная игра для Telegram — от канала [Digital in Pharma](https://t.me/digitalinpharma).
 
 🎮 **[Играть → t.me/trust_medicine_bot/game](https://t.me/trust_medicine_bot/game)**
 
